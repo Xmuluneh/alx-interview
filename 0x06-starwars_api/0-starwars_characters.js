@@ -1,27 +1,19 @@
 #!/usr/bin/node
 const request = require('request');
-const id = Number(process.argv[2]);
-
-function printExactList(array, idx) {
-  if (idx === array.length) {
-    return;
-  }
-  request(array[idx], function (error, response, body) {
-    if (error) {
-      return;
-    }
-    console.log(JSON.parse(body).name);
-    printExactList(array, idx + 1);
-  });
-}
 
 request(
-  `https://swapi-api.hbtn.io/api/films/${id}`,
-  function (error, response, body) {
-    if (error) {
-      return;
-    }
-    const characters = JSON.parse(body).characters;
-    printExactList(characters, 0);
+  'https://swapi-api.hbtn.io/api/films/' + process.argv[2],
+  function (err, res, body) {
+    if (err) throw err;
+    const actors = JSON.parse(body).characters;
+    exactOrder(actors, 0);
   }
 );
+const exactOrder = (actors, x) => {
+  if (x === actors.length) return;
+  request(actors[x], function (err, res, body) {
+    if (err) throw err;
+    console.log(JSON.parse(body).name);
+    exactOrder(actors, x + 1);
+  });
+};
